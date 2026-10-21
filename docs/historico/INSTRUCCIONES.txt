@@ -1,0 +1,19 @@
+PARCHE DE ENCABEZADO CRT VMR 5G · VERSION 11
+
+Contenido: assets/styles.css (un unico archivo)
+Objetivo: colocar «Acceso autorizado» y «Cerrar sesión» en la fila superior,
+a la derecha, sin alterar login, sesion, endpoints o calculos.
+
+INSTALACION EN RED HAT (desde SATyS):
+APP=/depi/dgp/DEI_DATOS/SATyS/portal_crt_vmr5g_v11_8084
+FECHA=$(date +%Y%m%d-%H%M%S)
+cp -a "$APP/assets/styles.css" "$APP/assets/styles.css.bak-$FECHA"
+unzip -t crt-vmr-5g-parche-header-v11.zip
+unzip -o crt-vmr-5g-parche-header-v11.zip -d "$APP"
+
+Abre http://172.17.42.163:8084 y actualiza con Ctrl+Shift+R.
+No hace falta reiniciar crt-vmr-5g.service; el CSS se lee del disco.
+Si necesitas revertir:
+cp -a "$APP/assets/styles.css.bak-$FECHA" "$APP/assets/styles.css"
+
+Se conserva la autenticacion y la ruta POST /logout con su token CSRF.

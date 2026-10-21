@@ -1,0 +1,26 @@
+# Nunca subir secretos, claves, bases de datos ni salidas de compilación
+.env
+.env.*
+!.env.example
+*.sqlite3
+*.sqlite3-*
+*.db
+*.pem
+*.key
+*.p12
+*.pfx
+__pycache__/
+*.py[cod]
+.pytest_cache/
+frontend/node_modules/
+frontend/dist/
+*.log
+.idea/
+.vscode/
+.DS_Store
+
+# Contenedores: secretos/certs/estado no se versionan
+*.crt
+*.jks
+container-state/
+.tls/

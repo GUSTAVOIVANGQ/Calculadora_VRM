@@ -1,0 +1,26 @@
+[Unit]
+Description=Calculadora VMR 5G - CRT (login protegido)
+After=network.target
+
+[Service]
+# Cree antes el usuario sin privilegios:  sudo useradd --system --no-create-home --shell /usr/sbin/nologin crt-vmr
+User=crt-vmr
+Group=crt-vmr
+WorkingDirectory=/opt/crt-vmr-5g
+EnvironmentFile=/etc/crt-vmr-5g.env
+UMask=0077
+StateDirectory=crt-vmr-5g
+StateDirectoryMode=0700
+# Con Nginx delante use 127.0.0.1. Sin proxy, use 0.0.0.0 (y --port 80 requiere CAP_NET_BIND_SERVICE).
+ExecStart=/usr/bin/python3 -B server.py --bind 127.0.0.1 --port 8084
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateDevices=true
+ReadOnlyPaths=/opt/crt-vmr-5g
+
+[Install]
+WantedBy=multi-user.target

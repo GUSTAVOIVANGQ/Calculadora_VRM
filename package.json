@@ -1,0 +1,9 @@
+{
+  "name": "crt-vmr-5g-publico",
+  "private": true,
+  "version": "10.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/model.test.mjs tests/ui-format.test.mjs"
+  }
+}

@@ -1,0 +1,22 @@
+# Capa opcional HTTPS directo sin Nginx. Uso:
+# docker compose -f compose.yaml -f compose.tls.yaml up -d --build
+# Rellene previamente VMR_PUBLIC_ORIGIN en /etc/crt-vmr-5g.env con el FQDN real.
+services:
+  portal-crt-vmr5g:
+    command:
+      - python
+      - server.py
+      - --bind
+      - 0.0.0.0
+      - --port
+      - "8084"
+      - --tls-cert
+      - /run/vmr-tls/fullchain.pem
+      - --tls-key
+      - /run/vmr-tls/privkey.pem
+    environment:
+      VMR_COOKIE_SECURE: "1"
+      VMR_ENABLE_HSTS: "1"
+      VMR_CONTAINER_TLS: "1"
+    volumes:
+      - /etc/crt-vmr-5g-tls:/run/vmr-tls:ro,Z

@@ -1,0 +1,26 @@
+# OPCIÓN A: HTTPS público en 443 y aplicación Python en 127.0.0.1:8084.
+# Si el dominio ya está configurado, adapte SOLO su location: no duplique server.
+# Reemplace dominio, rutas y certificados institucionales.
+server {
+    listen 80;
+    server_name calculadora.su-dominio.gob.mx;
+    return 301 https://$host$request_uri;
+}
+server {
+    listen 443 ssl;
+    server_name calculadora.su-dominio.gob.mx;
+    ssl_certificate /etc/ssl/certs/calculadora.crt;
+    ssl_certificate_key /etc/ssl/private/calculadora.key;
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    client_max_body_size 8k;
+
+    # Todas las rutas, incluido el Excel, pasan por el login Python.
+    # NO use root/alias/try_files apuntando directamente a la carpeta del proyecto.
+    location / {
+        proxy_pass http://127.0.0.1:8084;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

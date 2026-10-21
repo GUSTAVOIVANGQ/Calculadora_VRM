@@ -1,0 +1,34 @@
+# Docker Compose / podman-compose: una sola instancia; no ejecutar mientras
+# crt-vmr-5g.service mantenga ocupado el puerto 8084.
+services:
+  portal-crt-vmr5g:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: localhost/portal-crt-vmr5g:15
+    container_name: portal-crt-vmr5g
+    restart: unless-stopped
+    env_file:
+      - /etc/crt-vmr-5g.env
+    environment:
+      VMR_USERS_DB: /var/lib/crt-vmr-5g/users.sqlite3
+      VMR_TRUST_PROXY: "0"
+    ports:
+      - "8084:8084"
+    volumes:
+      - /var/lib/crt-vmr-5g-container:/var/lib/crt-vmr-5g:Z
+    read_only: true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,size=64m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 256
+    init: true
+    healthcheck:
+      test: ["CMD", "python", "/app/container/healthcheck.py"]
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3

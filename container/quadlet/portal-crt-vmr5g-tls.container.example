@@ -1,0 +1,36 @@
+# ALTERNATIVA a portal-crt-vmr5g.container, no instalar los dos.
+# Certificados SOLO en /etc/crt-vmr-5g-tls/, accesibles por UID 10001.
+# Indicar VMR_PUBLIC_ORIGIN=https://FQDN:8084 y VMR_COOKIE_SECURE=1
+# en /etc/crt-vmr-5g.env. Verificar certificado FQDN externamente.
+[Unit]
+Description=Portal CRT VMR 5G v14 (HTTPS directo)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=localhost/portal-crt-vmr5g:15
+ContainerName=portal-crt-vmr5g
+Pull=never
+PublishPort=0.0.0.0:8084:8084
+EnvironmentFile=/etc/crt-vmr-5g.env
+Environment=VMR_USERS_DB=/var/lib/crt-vmr-5g/users.sqlite3
+Environment=VMR_TRUST_PROXY=0
+Environment=VMR_COOKIE_SECURE=1
+Environment=VMR_ENABLE_HSTS=1
+Environment=VMR_CONTAINER_TLS=1
+Volume=/var/lib/crt-vmr-5g-container:/var/lib/crt-vmr-5g:Z
+Volume=/etc/crt-vmr-5g-tls:/run/vmr-tls:ro,Z
+Exec=python server.py --bind 0.0.0.0 --port 8084 --tls-cert /run/vmr-tls/fullchain.pem --tls-key /run/vmr-tls/privkey.pem
+User=10001:10001
+DropCapability=all
+NoNewPrivileges=true
+ReadOnly=true
+ReadOnlyTmpfs=true
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target

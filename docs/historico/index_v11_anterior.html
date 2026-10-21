@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<title>Calculadora VMR 5G · Comisión Reguladora de Telecomunicaciones</title>
+<meta content="Calcule el valor mínimo de referencia (VMR) del espectro radioeléctrico para 5G en las bandas de 600 MHz, 800 MHz y 2.5 GHz. Herramienta de acceso autorizado de la Comisión Reguladora de Telecomunicaciones." name="description"/>
+<meta content="light" name="color-scheme"/>
+<meta content="#2d5d5f" name="theme-color"/>
+<meta content="website" property="og:type"/>
+<meta content="es_MX" property="og:locale"/>
+<meta content="Calculadora VMR 5G · CRT" property="og:title"/>
+<meta content="Calcule el valor mínimo de referencia del espectro 5G: bandas de 600 MHz, 800 MHz y 2.5 GHz." property="og:description"/>
+<link href="assets/favicon.svg" rel="icon" type="image/svg+xml"/>
+<link href="assets/styles.css?v=11-print2" rel="stylesheet"/>
+</head>
+<body>
+<a class="skip" href="#main">Saltar al contenido</a>
+<div aria-hidden="true" class="topline"></div>
+<header class="site-header">
+<div class="wrap header-inner">
+<a aria-label="Comisión Reguladora de Telecomunicaciones, ir al sitio institucional" class="brand" href="https://www.gob.mx/crt">
+<img alt="Comisión Reguladora de Telecomunicaciones" class="brand-logo" height="193" src="assets/logo-crt.png" width="857"/>
+</a>
+<div class="header-copy">
+<strong>Calculadora del valor mínimo de referencia (VMR)</strong>
+<span>Espectro 5G · VMR 2026 y descuentos por despliegue</span>
+</div>
+<!-- SERVER_LOGOUT -->
+</div>
+<div class="wrap">
+<nav aria-label="Secciones de la calculadora" class="nav" role="tablist">
+<button aria-controls="tab-calc" aria-selected="true" data-tab="calc" id="t-calc" role="tab" type="button">Calculadora</button>
+<button aria-controls="tab-discounts" aria-selected="false" data-tab="discounts" id="t-discounts" role="tab" tabindex="-1" type="button">Descuentos y obligaciones</button><button aria-controls="tab-region" aria-selected="false" data-tab="region" id="t-region" role="tab" tabindex="-1" type="button">Resultados por región</button>
+<button aria-controls="tab-method" aria-selected="false" data-tab="method" id="t-method" role="tab" tabindex="-1" type="button">Cómo se calcula</button>
+<button aria-controls="tab-help" aria-selected="false" data-tab="help" id="t-help" role="tab" tabindex="-1" type="button">Glosario y preguntas</button>
+</nav>
+</div>
+</header>
+<div class="wrap">
+<noscript><div class="noscript"><strong>Se necesita JavaScript.</strong> Esta calculadora realiza los cálculos en su navegador. Habilite JavaScript o utilice un navegador actualizado para usarla.</div></noscript>
+<section aria-label="Encabezado de impresión" class="print-head" hidden id="printHead"></section>
+<section aria-labelledby="title" class="hero" id="hero">
+<p class="eyebrow">Comisión Reguladora de Telecomunicaciones</p>
+<h1 id="title">¿Cuánto vale el espectro para 5G?</h1>
+<p class="lead">Esta herramienta calcula el <strong>valor mínimo de referencia (VMR)</strong>: una cantidad en pesos mexicanos que sirve como punto de partida para valorar bloques de espectro radioeléctrico en las bandas de <strong>600 MHz</strong>, <strong>800 MHz</strong> y <strong>2.5 GHz</strong>.</p>
+<ol aria-label="Cómo usar la calculadora" class="steps">
+<li><b>Elija</b> cuántos MHz de cada banda desea valorar.</li>
+<li><b>Lea</b> el resultado en millones de pesos, junto a cada banda.</li>
+<li><b>Explore</b> los descuentos, obligaciones de despliegue y el detalle por región.</li>
+</ol>
+</section>
+<main id="main" tabindex="-1">
+<!-- ===================== CALCULADORA ===================== -->
+<section aria-labelledby="t-calc" id="tab-calc" role="tabpanel">
+<div class="banner" id="scenarioBanner" role="status"></div>
+<div class="grid">
+<aside aria-labelledby="params-h" class="panel aside-sticky">
+<h2 id="params-h">1. Su escenario</h2>
+<p class="sub">Los resultados se actualizan al escribir. No necesita presionar ningún botón de calcular.</p>
+<a class="jump" href="#results-h">Ir a los resultados ↓</a>
+<div class="band-input" style="--band:#7d3f56">
+<h3><span class="dot"></span>Banda de 600 MHz</h3>
+<label class="field"><span>Espectro a valorar <small>megahertz</small></span>
+<div class="input-wrap"><input data-k="spectrum.0" inputmode="decimal" min="0" step="any" type="text" data-number-format="grouped" autocomplete="off"/><span class="unit">MHz</span></div><span class="err" role="alert"></span></label>
+</div>
+<div class="band-input" style="--band:#8b681d">
+<h3><span class="dot"></span>Banda de 800 MHz</h3>
+<label class="field"><span>Espectro a valorar <small>megahertz</small></span>
+<div class="input-wrap"><input data-k="spectrum.1" inputmode="decimal" min="0" step="any" type="text" data-number-format="grouped" autocomplete="off"/><span class="unit">MHz</span></div><span class="err" role="alert"></span></label>
+<label class="field"><span>Precio unitario basado en</span>
+<select data-k="source.1"><option value="b">Comparación internacional</option><option value="n">Licitación nacional IFT-10</option></select></label>
+</div>
+<div class="band-input" style="--band:#2f6e70">
+<h3><span class="dot"></span>Banda de 2.5 GHz</h3>
+<label class="field"><span>Espectro a valorar <small>megahertz</small></span>
+<div class="input-wrap"><input data-k="spectrum.2" inputmode="decimal" min="0" step="any" type="text" data-number-format="grouped" autocomplete="off"/><span class="unit">MHz</span></div><span class="err" role="alert"></span></label>
+<label class="field"><span>Precio unitario basado en</span>
+<select data-k="source.2"><option value="b">Comparación internacional</option><option value="n">Licitaciones IFT-7 e IFT-10</option></select></label>
+<p class="hint">En el modelo base, la comparación internacional da un valor negativo para 2.5 GHz, por lo que se usa la referencia nacional.</p>
+</div>
+<div class="band-input plain">
+<h3>Condiciones de la concesión</h3>
+<label class="field"><span>Vigencia <small>años</small></span>
+<div class="input-wrap"><input data-k="years" inputmode="numeric" max="50" min="1" step="1" type="text" data-number-format="grouped" autocomplete="off"/><span class="unit">años</span></div><span class="err" role="alert"></span></label>
+<label class="field"><span>Reducción general de derechos (LFD) <small>%</small></span><div class="input-wrap"><input data-k="discounts.reduction" max="100" min="0" step="any" type="text" data-number-format="grouped" autocomplete="off"/><span class="unit">%</span></div><span class="err" role="alert"></span></label><p class="hint">La reducción general se presenta por separado de la VMR. Se aplica a 800 MHz y 2.5 GHz; no a 600 MHz.</p></div>
+<details class="adv">
+<summary>Supuestos económicos</summary>
+<p class="hint">Valores del modelo base. Cámbielos solo si conoce su significado; en la pestaña «Glosario y preguntas» se explica cada término.</p>
+<label class="field"><span>Tasa de descuento del benchmark <small>% anual</small></span><div class="input-wrap"><input data-k="rateBenchmark" inputmode="decimal" max="100" min="0" step="any" type="text" data-number-format="grouped" autocomplete="off"/><span class="unit">%</span></div><span class="err" role="alert"></span></label>
+<label class="field"><span>Tasa de descuento de derechos (LFD) <small>% anual</small></span><div class="input-wrap"><input data-k="rateRights" inputmode="decimal" max="100" min="0" step="any" type="text" data-number-format="grouped" autocomplete="off"/><span class="unit">%</span></div><span class="err" role="alert"></span></label>
+<label class="field"><span>INPC base del benchmark <small>noviembre 2025</small></span><div class="input-wrap"><input data-k="inpcBaseBenchmark" inputmode="decimal" min="0.0001" step="any" type="text" data-number-format="grouped" autocomplete="off"/></div><span class="err" role="alert"></span></label>
+<label class="field"><span>INPC de actualización <small>agosto 2026</small></span><div class="input-wrap"><input data-k="inpcCurrent" inputmode="decimal" min="0.0001" step="any" type="text" data-number-format="grouped" autocomplete="off"/></div><span class="err" role="alert"></span></label>
+</details>
+
+<details class="adv">
+<summary>Licitaciones nacionales de referencia</summary>
+<p class="hint">Montos pagados en licitaciones anteriores. Cada monto se actualiza por inflación con su propio INPC de origen.</p>
+<div id="refEditor"></div>
+</details>
+<p class="hint">Los datos de población, cuotas de derechos y cobertura por región se editan en la pestaña «Resultados por región».</p>
+<div class="btn-row">
+<button class="btn" data-action="reset" type="button">Restablecer valores base</button>
+<button class="btn" data-action="csv-vmr" type="button">Descargar VMR (CSV)</button>
+<button class="btn" id="print" type="button">Imprimir</button>
+<button class="btn primary" id="copyLink" type="button" hidden>Copiar enlace de este escenario</button>
+</div>
+<p aria-live="polite" class="hint" id="copyStatus" role="status"></p>
+</aside>
+<div>
+<h2 class="results-h" id="results-h">2. Resultados</h2>
+<div id="vmrError" class="error-box" role="alert" hidden></div><div aria-labelledby="results-h" aria-live="polite" class="cards" id="cards"></div>
+<p class="callout">Los descuentos adicionales por cobertura o modernización <strong>no se restan automáticamente del VMR</strong>. Consúltelos por operador en <button class="link-button" data-goto="discounts" type="button">Descuentos y obligaciones</button>.</p><p class="disclaimer">Herramienta informativa. Los valores oficiales son únicamente los que publique la Comisión Reguladora de Telecomunicaciones en los documentos de cada licitación.</p>
+</div>
+</div>
+</section>
+<!-- ===================== REGIONES ===================== -->
+<section aria-labelledby="t-discounts" hidden="" id="tab-discounts" role="tabpanel">
+<div class="grid">
+<aside aria-labelledby="discounts-h" class="panel aside-sticky">
+<h2 id="discounts-h">1. Descuento y obligación</h2><p class="sub">Seleccione el operador y la modalidad. Los montos y obligaciones se actualizan automáticamente.</p>
+<a class="jump" href="#discount-results-h">Ir a los resultados ↓</a>
+<div id="discountInputs"></div>
+<details class="adv"><summary>Costos, horizonte y bases</summary><p class="hint">Parámetros de referencia; pueden ajustarse para simular escenarios.</p><div id="discountAdvanced"></div></details>
+<p class="hint">Las bases por operador no corresponden necesariamente a los MHz elegidos en la calculadora VMR. Los descuentos se reportan por separado.</p>
+<div class="btn-row"><button class="btn" data-action="reset-discounts" type="button">Restablecer descuentos</button><button class="btn" data-action="print" type="button">Imprimir</button><button class="btn primary" data-action="share" type="button" hidden>Copiar enlace de este escenario</button></div><p aria-live="polite" class="hint" id="discountCopyStatus" role="status"></p>
+</aside>
+<div><h2 class="results-h" id="discount-results-h">2. Obligaciones de despliegue</h2><p class="note" id="discountScenario"></p><div class="error-box" hidden="" id="discountError" role="alert"></div><div class="cards" id="discountResults"></div>
+<article class="panel discount-table-section" aria-labelledby="discount-table-h">
+<div class="section-title"><div><h3 id="discount-table-h">Tabla de descuentos por obligaciones</h3><p class="sub">Compare todos los porcentajes del 10 % al 100 % para el operador, modalidad y supuestos elegidos. Los montos son nominales, no valores presentes.</p></div></div>
+<p class="note" id="discountTableNote"></p>
+<div class="table-wrap discount-table-wrap" role="region" tabindex="0" aria-label="Comparación de los porcentajes de descuento y sus obligaciones calculadas"><table id="discountComparison"></table></div>
+<p class="hint">Cifras monetarias en millones de pesos mexicanos (MDP). Pulse un porcentaje disponible para aplicarlo a las tarjetas superiores. «No aplica» indica que supera el límite del tipo de operador.</p>
+</article>
+<p class="disclaimer">Los habitantes estimados de cobertura y modernización pueden superponerse; no son personas únicas. Para los tipos C, D y E existen restricciones de modalidad y porcentaje máximo.</p>
+<div class="btn-row"><button class="btn primary" data-action="csv-discounts" type="button">Descargar descuentos (CSV)</button><button class="btn" data-action="share" type="button">Compartir escenario</button></div>
+</div>
+</div>
+</section><section aria-labelledby="t-region" class="panel section-panel" hidden="" id="tab-region" role="tabpanel">
+<div class="section-title">
+<div>
+<h2>Resultados por región</h2>
+<p>El país se divide en nueve <strong>regiones celulares</strong>. Esta tabla muestra cómo se reparte el VMR de la banda elegida entre ellas.</p>
+</div>
+<button class="btn" id="csv" type="button">Descargar tabla (CSV)</button>
+</div>
+<p class="seg-label" id="seg-band">Banda</p>
+<div aria-labelledby="seg-band" class="segmented" id="bandSelector" role="group"></div>
+<p class="seg-label" id="seg-mode">Qué valores usar</p>
+<div aria-labelledby="seg-mode" class="segmented" id="modeSelector" role="group"></div>
+<p class="note" id="regionNote">Las nueve regiones se calculan con los supuestos actualizados, usando las cuotas propias de cada banda.</p>
+<div id="regionError" class="error-box" role="alert" hidden></div><div aria-label="Tabla de resultados por región" class="table-wrap" id="regionalPanel" role="region" tabindex="0"><table id="regionTable"></table></div>
+<details class="adv">
+<summary>Editar población, cuotas de derechos y cobertura</summary>
+<p class="hint">Las cuotas se expresan en pesos por kHz al año (Ley Federal de Derechos). La cobertura es el porcentaje de la población de cada región que se considera cubierta. La vista «Valores base del modelo» no cambia con estas ediciones.</p>
+<div aria-label="Editor de datos regionales" class="table-wrap" role="region" tabindex="0"><table class="editor" id="editorTable"></table></div>
+</details>
+</section>
+<!-- ===================== METODOLOGÍA ===================== -->
+<section aria-labelledby="t-method" class="panel section-panel doc doc-v2" hidden="" id="tab-method" role="tabpanel">
+<header class="doc-head">
+<p class="eyebrow">Metodología</p>
+<h2>Cómo se calcula el VMR</h2>
+<p class="doc-lead">Precio unitario de referencia × MHz × población, ponderado por las cuotas LFD y la cobertura de cada región.</p>
+</header>
+
+<div class="formula-hero" role="group" aria-label="Fórmula principal">
+<span class="fh-label">Fórmula principal</span>
+<div class="fh-eq" tabindex="0">
+<span class="fh-term fh-result">VMR</span><span class="fh-op">=</span>
+<span class="fh-term">Población<small>nacional</small></span><span class="fh-op">×</span>
+<span class="fh-term">MHz<small>a valorar</small></span><span class="fh-op">×</span>
+<span class="fh-term">MHz/pop<small>precio unitario</small></span><span class="fh-op">×</span>
+<span class="fh-term">Σ (LFD × cobertura)<small>9 regiones</small></span>
+</div>
+<p class="fh-note">MHz/pop benchmark = [VP(mediana) − VP(derechos LFD)] × factor INPC</p>
+</div>
+
+<h3 class="kv-title">Valores clave del modelo base</h3>
+<div class="kv-grid">
+<div class="kv"><span class="kv-label">Tasa de descuento benchmark</span><strong class="kv-value">10.00<small> %</small></strong><span class="kv-foot">Anualidad ordinaria</span></div>
+<div class="kv"><span class="kv-label">Tasa de descuento derechos</span><strong class="kv-value">10.11<small> %</small></strong><span class="kv-foot">Anualidad anticipada</span></div>
+<div class="kv"><span class="kv-label">Vigencia de la concesión</span><strong class="kv-value">20<small> años</small></strong><span class="kv-foot">Horizonte del VP</span></div>
+<div class="kv"><span class="kv-label">Factor de inflación</span><strong class="kv-value">1.0197</strong><span class="kv-foot">INPC 145.462 ÷ 142.645</span></div>
+<div class="kv"><span class="kv-label">Población de referencia</span><strong class="kv-value">119.53<small> M hab.</small></strong><span class="kv-foot">INEGI 2015 · referencia nacional</span></div>
+<div class="kv"><span class="kv-label">Reducción general LFD</span><strong class="kv-value">12<small> %</small></strong><span class="kv-foot">800 MHz y 2.5 GHz · no 600 MHz</span></div>
+</div>
+
+<div class="method-split">
+<div class="mini-card">
+<h3>Precio unitario por banda</h3>
+<ul class="band-src">
+<li style="--band:#7d3f56"><span class="dot"></span><b>600 MHz</b><span>Mediana internacional</span></li>
+<li style="--band:#8b681d"><span class="dot"></span><b>800 MHz</b><span>Internacional o IFT-10</span></li>
+<li style="--band:#2f6e70"><span class="dot"></span><b>2.5 GHz</b><span>Nacional IFT-7 e IFT-10</span></li>
+</ul>
+</div>
+<div class="mini-card">
+<h3>Descuento máximo por tipo</h3>
+<ul class="cap-bars">
+<li><b>A / B</b><span class="cap"><i style="width:50%"></i></span><em>50 %</em></li>
+<li><b>C</b><span class="cap"><i style="width:70%"></i></span><em>70 %</em></li>
+<li><b>D</b><span class="cap"><i style="width:80%"></i></span><em>80 %</em></li>
+<li><b>E</b><span class="cap"><i style="width:100%"></i></span><em>100 %</em></li>
+</ul>
+<p class="hint">Los descuentos se reportan aparte; no se restan del VMR.</p>
+</div>
+</div>
+
+<div class="method-tools">
+<details class="adv tool"><summary>Ajustar observaciones del benchmark internacional</summary><p class="hint">La mediana de cada banda se recalcula al seleccionar observaciones. Debe permanecer al menos una por banda.</p><label class="field">Ver banda <select id="benchmarkFilter"><option value="all">Todas las bandas</option><option value="600 MHz">600 MHz</option><option value="800 MHz">800 MHz</option><option value="2.5 GHz">2.5 GHz</option></select></label><div aria-label="Observaciones de comparación internacional" class="table-wrap" role="region" tabindex="0"><table class="editor" id="benchmarkEditor"></table></div></details>
+<details class="adv tool"><summary>Verificación contra el Excel del modelo</summary><div class="audit"><div class="audit-card" id="auditSummary"></div><div class="audit-card"><strong>Privacidad</strong><span>Los cálculos se hacen en su navegador. Solo se usa una cookie técnica temporal para la sesión.</span></div></div><div aria-label="Comprobaciones automáticas" class="table-wrap" role="region" tabindex="0"><table id="auditTable"></table></div></details>
+</div>
+<p class="doc-download"><a download="" href="archivos/Calculadora_VMR_5G_actualizada_15_oct.xlsx">Descargar Excel del modelo</a><span>Las cifras mostradas son simulaciones informativas.</span></p>
+</section>
+<!-- ===================== AYUDA ===================== -->
+<section aria-labelledby="t-help" class="panel section-panel doc doc-v2" hidden="" id="tab-help" role="tabpanel">
+<header class="doc-head help-head">
+<div>
+<p class="eyebrow">Ayuda</p>
+<h2>Glosario y preguntas frecuentes</h2>
+<p class="doc-lead">Los términos y dudas más comunes al usar la calculadora.</p>
+</div>
+<label class="help-search"><span class="sr">Buscar en el glosario y las preguntas</span><input id="helpSearch" type="search" placeholder="Buscar término o pregunta…" autocomplete="off"/></label>
+</header>
+<p class="hint help-empty" id="helpEmpty" hidden>No hay resultados para esa búsqueda.</p>
+<h3 class="help-sub" id="gloss-h">Glosario</h3>
+<dl class="glossary-grid" aria-labelledby="gloss-h">
+<div class="gterm"><dt>Espectro radioeléctrico</dt><dd>Frecuencias por las que viajan las señales de telefonía móvil, radio y televisión. Es un recurso limitado propiedad de la Nación.</dd></div>
+<div class="gterm"><dt>MHz y GHz</dt><dd>Unidades de frecuencia (1 GHz = 1,000 MHz). A más MHz de ancho de banda, más capacidad para transmitir datos.</dd></div>
+<div class="gterm"><dt><abbr>VMR</abbr> · valor mínimo de referencia</dt><dd>Cantidad en pesos que sirve de referencia mínima para valorar el espectro en una licitación.</dd></div>
+<div class="gterm"><dt>MHz/pop</dt><dd>Precio unitario: pesos por cada MHz y por cada habitante (MXN/MHz/hab).</dd></div>
+<div class="gterm"><dt>Benchmark internacional</dt><dd>Lo que se ha pagado por espectro parecido en otros países. Se usa la mediana de esas observaciones.</dd></div>
+<div class="gterm"><dt>Referencia nacional</dt><dd>Precios pagados en licitaciones previas en México (IFT-7 e IFT-10), actualizados por inflación.</dd></div>
+<div class="gterm"><dt><abbr>VP</abbr> · valor presente</dt><dd>Lo que valen hoy pagos que se harán en el futuro, aplicando una tasa de descuento.</dd></div>
+<div class="gterm"><dt>Tasa de descuento</dt><dd>Porcentaje anual con el que se «traen» a hoy los pagos futuros. A mayor tasa, menor valor presente.</dd></div>
+<div class="gterm"><dt><abbr>LFD</abbr> · Ley Federal de Derechos</dt><dd>Fija los derechos anuales por usar el espectro, expresados por kHz al año y variables por región.</dd></div>
+<div class="gterm"><dt><abbr>INPC</abbr></dt><dd>Índice Nacional de Precios al Consumidor del INEGI. Mide la inflación y se usa para actualizar montos.</dd></div>
+<div class="gterm"><dt>Regiones celulares</dt><dd>Las nueve regiones en que se divide el país para la concesión, cada una con su población, cuotas y cobertura.</dd></div>
+<div class="gterm"><dt>Cobertura</dt><dd>Porcentaje de la población de una región que se considera cubierta. 100 % significa toda la región.</dd></div>
+</dl>
+<h3 class="help-sub" id="faq-h">Preguntas frecuentes</h3>
+<div class="faq-list" aria-labelledby="faq-h">
+<details class="faq"><summary>¿El resultado es el precio que se pagará por el espectro?</summary><p>No necesariamente. El VMR es un valor de referencia. Los valores oficiales para cada licitación son los que publique la CRT en sus bases y documentos.</p></details>
+<details class="faq"><summary>¿Qué significan «Valores base del modelo» y «Escenario modificado»?</summary><p>Si no cambia nada, la calculadora muestra los resultados del modelo base 2026. En cuanto modifica cualquier valor, aparece un aviso de «escenario modificado»: sus resultados son una simulación y no los valores base.</p></details>
+<details class="faq"><summary>¿Por qué 2.5 GHz usa la referencia nacional?</summary><p>Con los datos del modelo base, la comparación internacional para 2.5 GHz resulta negativa, algo que no tiene sentido como precio. Por eso el modelo utiliza el valor de las licitaciones nacionales previas.</p></details>
+<details class="faq"><summary>¿El descuento se resta del valor mínimo de referencia?</summary><p>No. La simulación del descuento por obligaciones usa sus propias bases anuales por operador. Se calcula y muestra por separado de la VMR de las bandas.</p></details>
+<details class="faq"><summary>¿Qué significa la reducción general del 12 %?</summary><p>Es una reducción de derechos LFD que, según la nota metodológica, no aplica a 600 MHz. No modifica el precio unitario usado para calcular el VMR.</p></details>
+<details class="faq"><summary>¿Por qué no aparece un descuento para ciertos operadores o modalidades?</summary><p>Cada tipo tiene un descuento máximo y no todas las modalidades aplican a C, D o E. Modernización e Híbrido 50/50 solo aplican a A/B.</p></details>
+<details class="faq"><summary>¿Cómo comparto o guardo mi escenario?</summary><p>Use «Compartir escenario» en la pestaña de descuentos, imprima la página o exporte los resultados VMR y de descuentos a CSV.</p></details>
+<details class="faq"><summary>¿Se guardan mis datos?</summary><p>No. Los cálculos se realizan en su navegador y los valores que escribe no se envían a la CRT ni a terceros. Si comparte un enlace de escenario, los valores viajan dentro del propio enlace.</p></details>
+<details class="faq"><summary>Veo un campo en rojo, ¿qué hago?</summary><p>El campo tiene un valor fuera de rango (por ejemplo, una tasa mayor a 100 %). Debajo del campo se indica el rango permitido. Mientras tenga error, el resultado conserva el último valor válido.</p></details>
+</div>
+<aside class="help-contact"><strong>¿Tiene otra duda?</strong><span>Escriba a <a href="mailto:ayuda.ventanilla@crt.gob.mx">ayuda.ventanilla@crt.gob.mx</a></span></aside>
+</section>
+</main>
+</div>
+<footer class="gfooter">
+<div class="gfooter-main">
+<div class="wrap gfooter-grid">
+<div class="gf-col gf-brand">
+<span class="gf-gobmx" aria-label="gob.mx">gob<b>.mx</b></span>
+<p class="gf-org">Comisión Reguladora de Telecomunicaciones</p>
+<a class="gf-cta" href="https://portal.crt.gob.mx/conoce-la-ventanilla" rel="noopener" target="_blank">Conoce la Ventanilla Electrónica</a>
+</div>
+<nav class="gf-col" aria-labelledby="gf-links">
+<h2 id="gf-links">Enlaces</h2>
+<ul>
+<li><a href="https://datos.gob.mx/" rel="noopener" target="_blank">Datos</a></li>
+<li><a href="https://www.plataformadetransparencia.org.mx/Inicio" rel="noopener" target="_blank">Portal de Obligaciones de Transparencia</a></li>
+<li><a href="https://consultapublicamx.plataformadetransparencia.org.mx/vut-web/" rel="noopener" target="_blank">PNT</a></li>
+<li><a href="https://transparencia.gob.mx/" rel="noopener" target="_blank">Transparencia para el pueblo</a></li>
+</ul>
+</nav>
+<div class="gf-col">
+<h2>¿Qué es gob.mx?</h2>
+<p>Es el portal único de trámites, información y participación ciudadana. <a href="https://www.gob.mx/que-es-gobmx" rel="noopener" target="_blank">Leer más</a></p>
+<ul>
+<li><a href="https://www.gob.mx/accesibilidad" rel="noopener" target="_blank">Declaración de Accesibilidad</a></li>
+<li><a href="https://sidec.buengobierno.gob.mx/#!/" rel="noopener" target="_blank">Denuncia contra servidores públicos</a></li>
+</ul>
+</div>
+<div class="gf-col">
+<h2>Contacto</h2>
+<p>Dudas e información a<br/><a href="mailto:ayuda.ventanilla@crt.gob.mx">ayuda.ventanilla@crt.gob.mx</a></p>
+<ul>
+<li><a href="https://www.gob.mx/crt" rel="noopener" target="_blank">Sitio institucional de la CRT</a></li>
+<li><a href="https://ventanilla.crt.gob.mx/VentanillaElectronica/index.php/Login" rel="noopener" target="_blank">Ventanilla Electrónica</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="gfooter-bar">
+<div class="wrap gfooter-bar-inner">
+<span>© 2026 Comisión Reguladora de Telecomunicaciones · Ciudad de México</span>
+<span>Calculadora VMR 5G · Modelo base 2026 · v11 · Los valores oficiales son los que publique la CRT.</span>
+</div>
+</div>
+</footer>
+<div class="print-meta" hidden="" id="printMeta"></div>
+
+
+<div aria-live="polite" class="notice" hidden="" id="notice" role="status"></div><script src="assets/ui.js?v=11-print2" type="module"></script></body>
+</html>

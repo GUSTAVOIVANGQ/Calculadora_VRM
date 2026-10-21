@@ -1,0 +1,26 @@
+# OPCIÓN B: usar este servicio EN LUGAR del principal cuando el Nginx
+# escucha HTTPS en el puerto exterior 8084. Python cambia a 18084.
+[Unit]
+Description=Calculadora VMR 5G CRT (backend para HTTPS externo 8084)
+After=network.target
+
+[Service]
+User=crt-vmr
+Group=crt-vmr
+WorkingDirectory=/opt/crt-vmr-5g
+EnvironmentFile=/etc/crt-vmr-5g.env
+UMask=0077
+StateDirectory=crt-vmr-5g
+StateDirectoryMode=0700
+ExecStart=/usr/bin/python3 -B server.py --bind 127.0.0.1 --port 18084
+Restart=always
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/crt-vmr-5g
+
+[Install]
+WantedBy=multi-user.target

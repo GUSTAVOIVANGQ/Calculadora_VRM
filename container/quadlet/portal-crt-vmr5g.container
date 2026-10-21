@@ -1,0 +1,30 @@
+# Podman Quadlet RHEL 9.7 (systemd de sistema/rootful).
+# Instalar en /etc/containers/systemd/portal-crt-vmr5g.container
+# La unidad generada se llama portal-crt-vmr5g.service.
+[Unit]
+Description=Portal CRT VMR 5G React v15 (contenedor)
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image=localhost/portal-crt-vmr5g:15
+ContainerName=portal-crt-vmr5g
+Pull=never
+PublishPort=0.0.0.0:8084:8084
+EnvironmentFile=/etc/crt-vmr-5g.env
+Environment=VMR_USERS_DB=/var/lib/crt-vmr-5g/users.sqlite3
+Environment=VMR_TRUST_PROXY=0
+Volume=/var/lib/crt-vmr-5g-container:/var/lib/crt-vmr-5g:Z
+User=10001:10001
+DropCapability=all
+NoNewPrivileges=true
+ReadOnly=true
+ReadOnlyTmpfs=true
+
+[Service]
+Restart=always
+RestartSec=5
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target

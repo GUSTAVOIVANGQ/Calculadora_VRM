@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2d5d5f">
+<meta name="robots" content="noindex,nofollow">
+<title>Crear cuenta · Calculadora VMR 5G · CRT</title>
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="stylesheet" href="/assets/login.css">
+</head>
+<body>
+<div class="topline" aria-hidden="true"></div>
+<header class="header"><div class="header-inner">
+<img src="/assets/logo-crt.png" alt="Comisión Reguladora de Telecomunicaciones" width="300" height="68">
+<div class="header-label"><strong>Calculadora del valor mínimo de referencia</strong><span>Espectro 5G · Acceso autorizado</span></div>
+</div></header>
+<main class="auth-wrap"><section class="auth-card" aria-labelledby="auth-title">
+<p class="eyebrow">COMISIÓN REGULADORA DE TELECOMUNICACIONES</p>
+<h1 id="auth-title">Crear cuenta</h1>
+<p class="auth-subtitle">Para registrarte, solicita un código de invitación al administrador de esta calculadora. No uses credenciales de otros sistemas.</p>
+__REGISTER_DISABLED__
+__REGISTER_ERROR__
+<form action="/crear-cuenta" method="post" autocomplete="on">
+<input type="hidden" name="csrf" value="__CSRF_TOKEN__">
+<label for="username">Usuario nuevo</label>
+<input id="username" name="username" type="text" autocomplete="username" minlength="3" maxlength="64" pattern="[A-Za-z0-9_.@-]{3,64}" required>
+<label for="password">Contraseña (mínimo 12 caracteres)</label>
+<input id="password" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required>
+<label for="confirm_password">Confirmar contraseña</label>
+<input id="confirm_password" name="confirm_password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required>
+<label for="invite_code">Código de invitación</label>
+<input id="invite_code" name="invite_code" type="password" autocomplete="off" maxlength="256" required>
+<button type="submit" __REGISTER_BUTTON_DISABLED__>Crear cuenta</button>
+</form>
+<p class="auth-secondary">¿Ya tienes una cuenta? <a href="/login">Iniciar sesión</a></p>
+</section></main>
+<footer>CRT · Calculadora VMR 5G · Acceso protegido</footer>
+</body>
+</html>

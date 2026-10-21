@@ -1,0 +1,38 @@
+stages:
+  - test
+  - build
+  - audit
+
+backend_tests:
+  stage: test
+  image: python:3.13-slim
+  script:
+    - python -m compileall -q server.py api.py accounts.py
+    - python -m unittest discover -s tests -p 'test_*.py' -q
+
+model_tests:
+  stage: test
+  image: node:22-alpine
+  script:
+    - node --test tests/model.test.mjs tests/ui-format.test.mjs
+
+react_build:
+  stage: build
+  image: node:22-alpine
+  script:
+    - cd frontend
+    - npm install --no-fund
+    - npm run build
+  artifacts:
+    expire_in: 14 days
+    paths:
+      - frontend/dist/
+
+npm_dependency_audit:
+  stage: audit
+  image: node:22-alpine
+  allow_failure: true  # Revisar alertas; pasar a false cuando el equipo estabilice dependencias.
+  script:
+    - cd frontend
+    - npm install --no-fund
+    - npm audit --audit-level=high
