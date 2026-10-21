@@ -42,3 +42,6 @@ body.login-reference{display:block;min-height:100vh;background:#f3f3f5;color:#72
 .login-failure p{margin:0 0 20px;color:#5c686b;font-size:14px;line-height:1.6}
 .login-failure-back{display:block;background:#2b6564;color:#fff!important;text-decoration:none;border-radius:6px;padding:12px 10px;font-weight:700;font-size:15px}
 .login-failure-back:hover,.login-failure-back:focus-visible{background:#215351;text-decoration:underline}
+
+.login-reference-help a{color:#296868;font-weight:600;text-decoration:underline;text-underline-offset:2px;overflow-wrap:anywhere}
+.login-reference-alert .auth-error{border-left:4px solid #b96554;border-radius:5px;line-height:1.5}

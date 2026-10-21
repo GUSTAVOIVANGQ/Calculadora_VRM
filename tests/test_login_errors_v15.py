@@ -52,18 +52,18 @@ class LoginErrorV15Test(unittest.TestCase):
         r=self.post('incorrecta',self.base)
         self.assertEqual(r.status,401)
         page=r.read().decode()
-        self.assertIn('No fue posible iniciar sesión',page)
+        self.assertIn('Usuario o contraseña incorrectos',page)
         self.assertIn('data:image/png;base64,',page)
-        self.assertIn('Volver a iniciar sesión',page)
+        self.assertIn('Iniciar sesión',page)
         self.assertNotIn('Traceback',page)
     def test_cross_origin_rejected_as_styled_page(self):
         r=self.post('clave-valida-prueba','http://untrusted.example')
         self.assertEqual(r.status,403)
-        self.assertIn('Solicitud no autorizada',r.read().decode())
+        self.assertIn('No pudimos validar el inicio de sesión',r.read().decode())
     def test_bad_csrf_uses_styled_page(self):
         r=self.post('clave-valida-prueba',self.base,csrf='mala')
         self.assertEqual(r.status,403)
-        self.assertIn('Formulario vencido',r.read().decode())
+        self.assertIn('El formulario venció',r.read().decode())
     def test_ip_origin_valid_redirect_and_session(self):
         class NoRedirect(urllib.request.HTTPRedirectHandler):
             def redirect_request(self, req, fp, code, msg, headers, newurl):

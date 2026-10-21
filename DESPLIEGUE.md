@@ -1,78 +1,74 @@
-# Despliegue y operación — Portal CRT VMR 5G React v15
+# Despliegue v17 — React + Python en Podman/Quadlet, RHEL 9.7 (8084)
 
-> Documento para infraestructura (Red Hat 9.7, IP 172.17.42.163, puerto 8084). Basado en el registro de comandos ejecutados por el usuario el 21/10/2026. Entorno privado de pruebas, sin Nginx.
+## Causa resuelta
 
-## Despliegue observado
+La consola de 21/10/2026 registra: `origin='null'` en `POST /login` pese a que `VMR_PUBLIC_ORIGIN=http://172.17.42.163:8084`. Además, `container/check_credentials.py` mostró credenciales válidas. Causa: el servidor enviaba `Referrer-Policy: no-referrer`, que hace que el navegador emita `Origin: null` en envíos POST tradicionales. La v17 cambia a `same-origin` manteniendo las defensas CSRF/Origin. No desactive ninguna de estas protecciones.
 
-- Se copió v14 con PowerShell `scp` hacia `/depi/dgp/DEI_DATOS/SATyS`.
-- En Red Hat se extrajo el ZIP y se ejecutó `sudo podman build -t localhost/portal-crt-vmr5g:14 .` con éxito. Node 22/Vite se instalaron y ejecutaron **dentro del build**; `npm` no estaba disponible en el host, lo cual no impidió el build de la imagen.
-- Se creó `/var/lib/crt-vmr-5g-container` para SQLite, manteniéndola fuera de la imagen.
-- La prueba en `127.0.0.1:18084` devolvió conexión rechazada inicialmente; ese contenedor siguió ejecutándose posteriormente. No confundir este resultado con una prueba de salud pasada.
-- Se deshabilitó el servicio Python original `crt-vmr-5g.service` después de respaldar datos.
-- Se instaló `/etc/containers/systemd/portal-crt-vmr5g.container` y se arrancó `portal-crt-vmr5g.service`; se verificó `active (running)` y `curl 127.0.0.1:8084/healthz` devolvió `ok`.
-- La pantalla se cargó, pero al enviar el login aparecía **«Origen no autorizado»**. Las capturas no demuestran una autenticación correcta. La causa probable es que `VMR_PUBLIC_ORIGIN` no coincide con el origen `http://172.17.42.163:8084` del navegador.
+## 1. Desde Windows (PowerShell/CMD): copiar y entrar al servidor
 
-## Actualización correctiva v15
+```powershell
+cd C:\Users\gustavo.garcia\Downloads
+scp .\portal-crt-vmr5g-react-contenedor-v17-origin-corregido.zip gustavo.garcia@172.17.42.163:/depi/dgp/DEI_DATOS/SATyS/
+ssh gustavo.garcia@172.17.42.163
+```
 
-Ver `README.md`, apartado **Despliegue real** para comandos completos. Resumen de operación:
+**El resto se ejecuta en Red Hat, no en Windows.**
+
+## 2. Descomprimir en carpeta separada y construir imagen v17
 
 ```bash
 cd /depi/dgp/DEI_DATOS/SATyS
-mkdir -p crt_vmr5g_v15_build
-unzip -oq portal-crt-vmr5g-react-contenedor-v15.zip -d crt_vmr5g_v15_build
-cd crt_vmr5g_v15_build/portal_crt_vmr5g_react
-sudo podman build -t localhost/portal-crt-vmr5g:15 .
+mkdir -p crt_vmr5g_v17_build
+unzip -oq portal-crt-vmr5g-react-contenedor-v17-origin-corregido.zip -d crt_vmr5g_v17_build
+cd crt_vmr5g_v17_build/portal_crt_vmr5g_react
+sudo podman build --format docker -t localhost/portal-crt-vmr5g:17 .
 ```
 
-Para **prueba interna solamente**: configurar `user` y contraseña temporal `password` mediante el script de terminal interactivo (el password no se encuentra en Git ni en la imagen):
+Si el servidor no tiene npm, no hace falta instalarlo: React se compila dentro del Dockerfile (Node 22). La imagen de ejecución utiliza Python 3.13 como usuario 10001.
+
+## 3. Actualizar Quadlet, manteniendo credenciales y usuarios
 
 ```bash
-sudo /usr/bin/python3 scripts/configurar_prueba_http.py \
- --origin http://172.17.42.163:8084 --username user --accept-insecure-http-test
-```
-
-El script solicita la clave dos veces, guarda un hash, cambia `VMR_PUBLIC_ORIGIN` al origen HTTP usado, `VMR_COOKIE_SECURE=0`, `VMR_ENABLE_HSTS=0`, y realiza un respaldo con permisos restringidos. **No se debe habilitar esta configuración para usuarios reales ni redes públicas.** La política de `Origin` permanece activa y bloquea solicitudes de sitios terceros.
-
-```bash
-sudo podman rm -f portal-vmr-prueba 2>/dev/null || true
-sudo cp container/quadlet/portal-crt-vmr5g.container /etc/containers/systemd/portal-crt-vmr5g.container
+sudo cp -a /etc/containers/systemd/portal-crt-vmr5g.container /etc/containers/systemd/portal-crt-vmr5g.container.bak-v16
+sudo cp container/quadlet/portal-crt-vmr5g.container /etc/containers/systemd/
 sudo systemctl daemon-reload
 sudo systemctl restart portal-crt-vmr5g.service
-sudo systemctl status portal-crt-vmr5g.service --no-pager
-curl -fsS http://127.0.0.1:8084/healthz
-curl -fsS http://127.0.0.1:8084/api/v1/readiness
 ```
 
-Valida credenciales correctas, incorrectas, origen inválido, CSRF vencido, enlace «Registrarme» oculto y acceso a la calculadora. Las rutas `/register` y `/crear-cuenta` siguen disponibles si el administrador mantiene invitaciones; ocultar el enlace **no es una medida de control de registro**. Desactivar el código de invitación en configuración para prohibir registros por completo si esa es la política.
+No sustituir `/etc/crt-vmr-5g.env` ni borrar `/var/lib/crt-vmr-5g-container/`: contienen configuración privada y usuarios. No iniciar `crt-vmr-5g.service` a la vez, pues ya se usa 8084.
 
-## Verificación de permanencia
+## 4. Comprobar servicio y login
 
-`portal-crt-vmr5g.service` es generado a partir del Quadlet con `WantedBy=multi-user.target`. Utilizar `sudo systemctl status portal-crt-vmr5g.service --no-pager`, `sudo journalctl -u portal-crt-vmr5g.service -n 80 --no-pager`, `sudo podman ps`. Cerrar SSH con `exit` no detiene el servicio.
+```bash
+sudo systemctl is-active portal-crt-vmr5g.service
+sudo podman exec portal-crt-vmr5g python -c 'import os; print("Origen configurado:", os.getenv("VMR_PUBLIC_ORIGIN"))'
+curl -sI http://127.0.0.1:8084/login | grep -iE '^HTTP/|^Referrer-Policy:'
+curl -fsS http://127.0.0.1:8084/healthz
+sudo podman exec -it portal-crt-vmr5g python container/check_credentials.py
+```
 
-## Seguridad institucional (DNS)
+En la respuesta del login debe aparecer `Referrer-Policy: same-origin`. En el chequeo de credenciales, escribir interactivamente el usuario de prueba y su contraseña (sin compartirla); la aplicación nunca debe mostrar la contraseña en el log. Abrir una nueva pestaña privada en `http://172.17.42.163:8084/login`, iniciar sesión y confirmar redirección a la calculadora. Una contraseña incorrecta debe mostrar un mensaje dentro del login, no «origen no autorizado».
 
-- No publicar credenciales sobre HTTP. El origen final deberá ser HTTPS y DNS acordado; el equipo de red suministra certificado, restricciones de firewall y acceso.
-- `VMR_PUBLIC_ORIGIN=https://FQDN:8084` (o URL definitiva), `VMR_COOKIE_SECURE=1`, `VMR_ENABLE_HSTS=1`. Reiniciar después de cambios. No eliminar validación de `Origin` o token CSRF.
-- Sustituir `user/password` por clave fuerte. Usar `create_login.py --replace` mediante procedimiento de rotación verificado, **sin perder otras variables del `.env`**. No guardar contraseñas ni hashes en GitLab.
-- Limitar puerto de administración 9090, habilitar escaneo de imagen y dependencias y registros de acceso. El backend usa `http.server` y mantiene sesiones y rate-limit en memoria; evaluar servidor de producción y pruebas adicionales antes de acceso público.
-- Persistir SQLite en `/var/lib/crt-vmr-5g-container`, preservar permisos UID 10001 y respaldar antes de actualizar. Los reinicios cierran sesiones en memoria.
+Si falla: `sudo journalctl -u portal-crt-vmr5g.service -n 60 --no-pager`; comprobar que el navegador envía el origen correcto.
 
-## Herramientas del despliegue
+## 5. Mantenerlo siempre encendido
 
-| Herramienta | Uso |
-|---|---|
-| Windows PowerShell | Consola para transferir archivos |
-| OpenSSH (scp/ssh) | Copia segura ZIP y acceso al host |
-| RHEL 9.7 | Sistema operativo anfitrión |
-| Podman 5.8.2 | Construcción y ejecución del contenedor |
-| systemd / Quadlet | Persistencia del contenedor y autoarranque |
-| Node.js 22 + npm + Vite | Compilación React dentro de imagen multi-etapa |
-| React | UI |
-| Python 3.13 | Backend y API |
-| SQLite | Usuarios persistentes |
-| curl | Chequeos HTTP y endpoints |
-| GitLab | Repositorio, CI, gobernanza |
+```bash
+sudo systemctl is-active portal-crt-vmr5g.service
+sudo systemctl status portal-crt-vmr5g.service --no-pager
+exit
+```
 
-## Rollback
+El archivo Quadlet en `/etc/containers/systemd/` tiene `WantedBy=multi-user.target`, de modo que arranca con Red Hat y permanece al cerrar la terminal.
 
-Conservar imagen local v14. Si falla v15, apuntar la definición Quadlet a `localhost/portal-crt-vmr5g:14`, ejecutar `sudo systemctl daemon-reload` y `sudo systemctl restart portal-crt-vmr5g.service`. No tocar ni eliminar la base SQLite. Confirmar estado antes de cerrar SSH.
+## Reversión a v16
+
+```bash
+sudo cp -a /etc/containers/systemd/portal-crt-vmr5g.container.bak-v16 /etc/containers/systemd/portal-crt-vmr5g.container
+sudo systemctl daemon-reload
+sudo systemctl restart portal-crt-vmr5g.service
+```
+
+## Seguridad antes de DNS
+
+La URL HTTP y las credenciales débiles de laboratorio no son apropiadas para producción. Configurar HTTPS directo o terminación TLS institucional, `VMR_PUBLIC_ORIGIN` HTTPS definitivo, `VMR_COOKIE_SECURE=1`, credenciales robustas, acceso restringido y respaldo de SQLite. No incluir secretos en GitLab. El administrador de contacto sigue siendo `crt.bot.satys@gmail.com`.

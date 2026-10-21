@@ -231,7 +231,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('Cache-Control', 'no-store, private')
         self.send_header('X-Content-Type-Options', 'nosniff')
         self.send_header('X-Frame-Options', 'DENY')
-        self.send_header('Referrer-Policy', 'no-referrer')
+        # 'no-referrer' hace que Chrome/Edge envíen Origin: null en POST de
+        # formularios HTML. 'same-origin' preserva el origen en /login y
+        # no comparte Referer con sitios externos. Origin y CSRF se validan igual.
+        self.send_header('Referrer-Policy', 'same-origin')
         self.send_header('Permissions-Policy', 'geolocation=(), camera=(), microphone=()')
         self.send_header('Content-Security-Policy', CSP)
         if os.getenv('VMR_ENABLE_HSTS', '0') == '1' and os.getenv('VMR_COOKIE_SECURE', '0') == '1':
@@ -270,39 +273,33 @@ class Handler(BaseHTTPRequestHandler):
                 pass
         return peer
 
-    def _login_page(self, error=False, head=False):
+    def _login_page(self, error=False, head=False, status=None, message=None):
+        """Siempre mostrar el formulario original, también después de un error.
+
+        Los rechazos de Origin y CSRF permanecen activos; no se presentan como
+        credenciales incorrectas porque todavía no se intentó autenticación.
+        """
+        import html
         raw = (ROOT / 'login.html').read_text(encoding='utf-8')
         raw = raw.replace('__CSRF_TOKEN__', self.auth.new_login_token())
-        raw = raw.replace('__LOGIN_ERROR__',
-                          '<p class="auth-error" role="alert">Usuario o contraseña incorrectos, o demasiados intentos. Inténtalo más tarde.</p>'
-                          if error else '')
-        self._send(200 if not error else 401, raw.encode('utf-8'), 'text/html; charset=utf-8', head=head)
+        if error and message is None:
+            message = 'Usuario o contraseña incorrectos. Comprueba los datos e inténtalo nuevamente.'
+        alert = ('<p class="auth-error" role="alert">' + html.escape(message, quote=True) + '</p>'
+                 if message else '')
+        raw = raw.replace('__LOGIN_ERROR__', alert)
+        code = status if status is not None else (401 if error else 200)
+        self._send(code, raw.encode('utf-8'), 'text/html; charset=utf-8', head=head)
 
     def _auth_failure_page(self, reason, head=False):
-        """Renderiza un rechazo local sin revelar cuentas ni secretos.
-
-        Origin y CSRF se siguen validando antes de autenticar; esta página
-        reemplaza únicamente la respuesta plana en formularios HTML.
-        """
+        """Errores en el mismo formulario con código HTTP y controles intactos."""
         presentations = {
-            'credentials': ('401', 'No fue posible iniciar sesión',
-                            'Los datos de acceso son incorrectos. '
-                            'Verifica los datos e inténtalo nuevamente.'),
-            'origin': ('403', 'Solicitud no autorizada',
-                       'El origen de esta solicitud no coincide con la dirección '
-                       'autorizada para el portal. Vuelve a abrir el sitio desde '
-                       'su dirección oficial o contacta al administrador.'),
-            'expired': ('403', 'Formulario vencido',
-                        'La sesión del formulario venció o no pudo validarse. '
-                        'Abre nuevamente la página de acceso para continuar.'),
-            'rate': ('429', 'Demasiados intentos',
-                     'Se alcanzó el límite temporal de intentos de acceso. '
-                     'Espera unos minutos antes de volver a intentarlo.'),
+            'credentials': (401, 'Usuario o contraseña incorrectos. Comprueba los datos e inténtalo nuevamente.'),
+            'origin': (403, 'No pudimos validar el inicio de sesión. Abre el portal desde su dirección oficial y vuelve a intentarlo.'),
+            'expired': (403, 'El formulario venció. Vuelve a ingresar tus datos en este formulario.'),
+            'rate': (429, 'Demasiados intentos de acceso. Inténtalo más tarde.'),
         }
-        status, title, detail = presentations[reason]
-        html = (ROOT / 'login-error.html').read_text(encoding='utf-8')
-        html = html.replace('__ERROR_TITLE__', title).replace('__ERROR_DETAIL__', detail)
-        self._send(int(status), html.encode('utf-8'), 'text/html; charset=utf-8', head=head)
+        status, message = presentations[reason]
+        return self._login_page(head=head, status=status, message=message)
 
     def _register_page(self, error=False, head=False):
         raw = (ROOT / 'register.html').read_text(encoding='utf-8')
@@ -475,12 +472,18 @@ class Handler(BaseHTTPRequestHandler):
         # Block cross-site POSTs (SameSite=Strict alone is not full CSRF protection).
         origin = self.headers.get('Origin')
         if origin is not None and not allowed_origin(origin, self.headers.get('Host', '')):
-            return (self._send_json(403, {'error': 'Origen no autorizado'}) if path.startswith('/api/') else
+            # Se registran solo metadatos de la petición, nunca usuario, contraseña,
+            # token CSRF ni Cookie. Resulta útil para distinguir errores de Edge/Chrome.
+            logging.warning('Origen rechazado path=%s host=%r origin=%r esperado=%r',
+                            path, self.headers.get('Host', '')[:128],
+                            origin[:128], os.getenv('VMR_PUBLIC_ORIGIN', '')[:128])
+            return (self._send_json(403, {'error': 'No fue posible validar la solicitud'}) if path.startswith('/api/') else
                     self._auth_failure_page('origin') if path in ('/login', '/logout', '/register', '/crear-cuenta') else
-                    self._send(403, b'Origen no autorizado\n'))
+                    self._send(403, b'Solicitud no valida\n'))
         if self.headers.get('Sec-Fetch-Site', '').lower() == 'cross-site':
+            logging.warning('Solicitud entre sitios rechazada path=%s site=cross-site', path)
             return (self._auth_failure_page('origin') if path in ('/login', '/logout', '/register', '/crear-cuenta')
-                    else self._send(403, b'Solicitud entre sitios rechazada\n'))
+                    else self._send(403, b'Solicitud no valida\n'))
         if path in ('/api/v1/auth/login', '/api/v1/auth/register'):
             return self._api_auth_post(path)
         if path in API_POST:

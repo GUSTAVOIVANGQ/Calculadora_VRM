@@ -1,3 +1,9 @@
+# Actualización v17 — login corregido en Red Hat/Podman
+
+En las pruebas reales el navegador enviaba `Origin: null` al enviar el formulario. La causa era `Referrer-Policy: no-referrer` en `server.py`, no las credenciales. Ahora se envía `Referrer-Policy: same-origin`. Se conservan CSRF, controles de origen y validación del usuario. **No hay contraseñas incluidas** en este repositorio.
+
+Despliegue permanente: ver [DESPLIEGUE.md](DESPLIEGUE.md). Historial de cambios: [CAMBIOS_VERSION_17.md](CAMBIOS_VERSION_17.md).
+
 # Portal CRT VMR 5G — React + Python (migración progresiva)
 
 > **Actualización v15:** el login ya no muestra «Registrarme»; los rechazos por credenciales, origen y CSRF tienen una página CRT. Se mantiene el control de acceso y los endpoints. La dirección autorizada debe coincidir con el navegador. La ruta de registro continúa disponible solamente si hay invitaciones habilitadas.
@@ -133,3 +139,18 @@ sudo systemctl restart portal-crt-vmr5g.service
 ```
 
 **Herramientas utilizadas:** Windows PowerShell, OpenSSH (`scp`, `ssh`), RHEL 9.7, Podman 5.8.2, systemd/Quadlet, Node 22/npm/Vite (build dentro de contenedor), React, Python 3.13, SQLite, GitLab y `curl`. Para una guía ampliada ver `docs/DESPLIEGUE_RHEL9_8084_V15.md`.
+
+
+## Acceso y despliegue de la versión 16
+
+El acceso utiliza usuario y contraseña locales configurados en `/etc/crt-vmr-5g.env` (fuera de GitLab). Para la prueba interna el usuario solicitado es `user`; la contraseña `password` **no se guarda en el repositorio ni es una clave por defecto automática**: debe haberse configurado interactivamente. Para verificar lo que realmente está cargado en el contenedor, ejecutar:
+
+```bash
+sudo podman exec -it portal-crt-vmr5g python container/check_credentials.py
+```
+
+El correo de **contacto** del administrador es `crt.bot.satys@gmail.com`. No constituye una cuenta de login ni configura SMTP.
+
+Desde v16 los errores de autenticación aparecen en el **mismo formulario CRT** (401 datos inválidos, 403 CSRF/origen y 429 límite de intentos). Se conserva la validación de `Origin` y CSRF; no se muestra una pantalla «Solicitud no autorizada». No confirmar públicamente si un usuario existe, para prevenir enumeración de cuentas.
+
+Despliegue real y comandos de Podman/RHEL 8084: [DESPLIEGUE.md](DESPLIEGUE.md). El despliegue definitivo con DNS necesita TLS y credenciales seguras.

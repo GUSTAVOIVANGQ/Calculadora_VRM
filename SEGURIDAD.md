@@ -44,3 +44,20 @@
 El navegador debe acceder exactamente al origen declarado en `VMR_PUBLIC_ORIGIN` (esquema + hostname/IP + puerto). El sistema **no** desactiva este control para resolver el error. En la dirección HTTP de laboratorio `http://172.17.42.163:8084` solo puede probarse con `VMR_PUBLIC_ORIGIN=http://172.17.42.163:8084` y cookies no seguras, **exclusivamente en red privada aislada**. Con DNS institucional se obliga HTTPS y cookies `Secure`. Los rechazos HTML ahora presentan una página CRT (401/403/429); las APIs mantienen códigos HTTP/JSON.
 
 El script `scripts/configurar_prueba_http.py` permite crear credenciales temporales débiles a petición del administrador y **no** es una función de bootstrap automático. No habilitarlo ni ejecutarlo en producción, y rotar `user/password` al finalizar pruebas. Ocultar el enlace de registro no deshabilita el endpoint: retirar el código de invitación si deben prohibirse altas.
+
+## Inicio de sesión v16
+
+Los errores de credenciales retornan HTTP 401 y un mensaje genérico, sin confirmar si la cuenta existe. Rechazos de Origin y CSRF devuelven HTTP 403 y un mensaje de validación, con el formulario renovado; nunca se reinterpretan como prueba de credenciales incorrectas. Los intentos repetidos reciben HTTP 429. Verificación interna de credenciales: `sudo podman exec -it portal-crt-vmr5g python container/check_credentials.py` (sin exposición de contraseña). El correo de administrador es informativo, no habilita SMTP ni crea cuenta.
+
+
+### Corrección de formularios HTML (v17)
+
+El encabezado HTTP `Referrer-Policy: no-referrer` hacía que Chrome/Edge enviaran
+`Origin: null` al enviar el formulario `/login`. El backend rechazaba ese POST
+aunque el usuario y la contraseña fueran correctos. La política ahora es
+`Referrer-Policy: same-origin`: no revela URL de procedencia a dominios externos
+y conserva el origen real en formularios del propio sitio. **Se conserva**
+`Origin` estricto, comprobación `Sec-Fetch-Site`, tokens CSRF, cookies protegidas
+y límite de intentos. No se admite `Origin: null` en el servidor.
+
+Referencias: MDN, `Referrer-Policy` (sección 'Effect on the Origin header') y `Origin`.

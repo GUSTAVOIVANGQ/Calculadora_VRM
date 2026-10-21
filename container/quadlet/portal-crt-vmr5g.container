@@ -2,12 +2,12 @@
 # Instalar en /etc/containers/systemd/portal-crt-vmr5g.container
 # La unidad generada se llama portal-crt-vmr5g.service.
 [Unit]
-Description=Portal CRT VMR 5G React v15 (contenedor)
+Description=Portal CRT VMR 5G React v17 (contenedor)
 Wants=network-online.target
 After=network-online.target
 
 [Container]
-Image=localhost/portal-crt-vmr5g:15
+Image=localhost/portal-crt-vmr5g:17
 ContainerName=portal-crt-vmr5g
 Pull=never
 PublishPort=0.0.0.0:8084:8084

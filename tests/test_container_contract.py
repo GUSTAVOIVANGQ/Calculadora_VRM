@@ -18,7 +18,8 @@ class ContainerContractTests(unittest.TestCase):
         self.assertIn('COPY --chown=10001:10001 --from=frontend-builder',contents)
         self.assertIn('USER 10001:10001',contents)
         self.assertIn('HEALTHCHECK', contents)
-        self.assertIn('login-error.html', contents)
+        self.assertIn('container/check_credentials.py', contents)
+        self.assertNotIn('login-error.html', contents)
     def test_no_secrets_in_build_context(self):
         contents=(ROOT/'.dockerignore').read_text()
         self.assertIn('*.key',contents)

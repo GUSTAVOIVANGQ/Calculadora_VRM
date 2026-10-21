@@ -19,11 +19,11 @@ RUN groupadd --gid 10001 vmr && useradd --uid 10001 --gid 10001 \
     --home-dir /app --shell /usr/sbin/nologin --no-create-home vmr \
     && mkdir -p /var/lib/crt-vmr-5g \
     && chown -R 10001:10001 /var/lib/crt-vmr-5g
-COPY --chown=10001:10001 server.py api.py accounts.py login.html login-error.html register.html robots.txt ./
+COPY --chown=10001:10001 server.py api.py accounts.py login.html register.html robots.txt ./
 COPY --chown=10001:10001 assets ./assets
 COPY --chown=10001:10001 archivos ./archivos
 COPY --chown=10001:10001 --from=frontend-builder /build/frontend/dist ./frontend/dist
-COPY --chown=10001:10001 container/healthcheck.py ./container/healthcheck.py
+COPY --chown=10001:10001 container/healthcheck.py container/check_credentials.py ./container/
 RUN python -m py_compile server.py api.py accounts.py && test -s frontend/dist/index.html
 USER 10001:10001
 EXPOSE 8084
